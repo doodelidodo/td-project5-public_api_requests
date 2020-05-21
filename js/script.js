@@ -10,7 +10,11 @@ let filteredUserCards = [];
 //  FETCH FUNCTIONS
 // ------------------------------------------
 
-
+/**
+ *  Fetches Data from an API and parse it to json format.
+ * @param   url to an API
+ * @return  Promise
+ */
 function fetchData(url) {
     return fetch(url)
         .then(checkStatus)
@@ -25,7 +29,11 @@ fetchData(usersURL)
 //  HELPER FUNCTIONS
 // ------------------------------------------
 
-
+/**
+ *  Checks if a API call was successful or not and gives the right promise as a return.
+ * @param   response
+ * @return  Promise
+ */
 function checkStatus (response) {
     if (response.ok) {
         return Promise.resolve(response);
@@ -34,10 +42,13 @@ function checkStatus (response) {
     }
 }
 
+/**
+ *  Renders the Page with users and the searchbar. Adds An eventlistener to open the modal
+ * @param   data with users
+ */
 function generateUserInfos(data) {
     let html = "";
     userList = data;
-    let modalList = getListForModal;
 
     data.map( (user, index) => {
         const name = user.name.first + " " + user.name.last;
@@ -72,6 +83,12 @@ function generateUserInfos(data) {
     appendSearchBar();
 }
 
+/**
+ *  Renders the modal with the additional user infos. With Eventlisteners for closing the Modal and navigate through the
+ *  Users
+ * @param   user data
+ * @param index
+ */
 function showInfoForUser(user, index) {
     const date = new Date(user.dob.date);
     const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
@@ -138,6 +155,10 @@ function showInfoForUser(user, index) {
     });
 }
 
+/**
+ *  Checks if there is a filtered List available or not
+ * @return user list or filtered user list
+ */
 const getListForModal = () => {
     if(filteredUserList.length > 0) {
         return filteredUserList;
@@ -146,6 +167,14 @@ const getListForModal = () => {
     }
 };
 
+/**
+ *  Set the Navigation Buttons in the Modal. Checks if its the first or the last one to show the right buttons.
+ * @param index of the list
+ * @param list
+ * @param element
+ * @param prevBtn
+ * @param nextBtn
+ */
 const setModalNavigation = (index, list, element, prevBtn, nextBtn) => {
     element.show();
     prevBtn.show();
@@ -163,7 +192,9 @@ const setModalNavigation = (index, list, element, prevBtn, nextBtn) => {
 };
 
 
-//SearchInput
+/**
+ *  Render the search input field and adding the functionality to search users with an event listener
+ */
 const appendSearchBar = () => {
     const allUsers = $('.card');
 
@@ -202,14 +233,12 @@ const appendSearchBar = () => {
     });
 };
 
-/***
- function createNoResultDiv
- param1: list
- param2: element
 
- Creates a div with the message no Results and set the div to display none
- ***/
-const createNoResultDiv = (name) => {
+/**
+ *  creates a div with the info no result
+ *  @return no result div
+ */
+const createNoResultDiv = () => {
     const divNoResult = document.createElement('div');
     divNoResult.className = "no-result";
     divNoResult.style.display = "none";
@@ -220,14 +249,12 @@ const createNoResultDiv = (name) => {
     return divNoResult;
 };
 
-/***
- function showNoResult
- param1: list
- param2: element
 
- if the list is empty, the element gets display block.
- ***/
-
+/**
+ *  checks if there are no results and show the no result div
+ *  @param list
+ *  @param element
+ */
 const showNoResult = (list, element) => {
     if (!list.length) {
         element.style.display = "block";

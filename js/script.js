@@ -230,6 +230,8 @@ const appendSearchBar = () => {
     input.addEventListener('search', (e) => {
         divNoResult.style.display = "none";
         $('.card').css("display", "flex");
+        filteredUserCards = [];
+        filteredUserList = [];
     });
 };
 

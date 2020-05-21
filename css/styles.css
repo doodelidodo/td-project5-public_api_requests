@@ -87,9 +87,9 @@ header h1 {
     max-width: 360px;
     margin: 10px 10px 20px;
     padding: 10px;
-    background: rgba(245, 245, 245, 0.9);
-    border-radius: 0.25em;
+    background: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(50, 50, 50, 0.3);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     transition: .4s ease-out;
     overflow: hidden;
 }
@@ -120,6 +120,13 @@ header h1 {
 }
 
 
+.no-result {
+    margin-top: 20%;
+    font-size: 50px;
+    color: #1A008B;
+}
+
+
 /* ===================================== 
    Modal
 ======================================== */
@@ -141,8 +148,6 @@ header h1 {
     margin: 10px auto auto;
     padding-bottom: 15px;
     background: rgba(255, 255, 255, 1);
-    border-radius: 0.25em;
-    border: 1px solid rgba(100, 100, 100, 0.3);
     transition: .4s ease-out;
 }
 
@@ -151,11 +156,9 @@ header h1 {
     top: 15px;
     right: 15px;
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.9);
-    background: rgba(0, 0, 0, 0.8);
     outline: none;
-    border-radius: 0.25em;
-    border: 1px solid rgba(50, 50, 50, 0.3);
+    border: none;
+    font-size: 28px;
 }
 
 .modal-img {
@@ -187,10 +190,9 @@ header h1 {
     width: 95%;
     max-width: 420px;
     padding: 10px 15px 15px;;
-    margin: 10px auto auto;
+    margin: 0 auto auto;
     background: rgba(255, 255, 255, 1);
-    border-radius: 0.25em;
-    border: 1px solid rgba(100, 100, 100, 0.3);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)
 }
 
 
@@ -201,8 +203,7 @@ header h1 {
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.9);
     padding: 0.75em 1.5em;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 0.35em;
+    background: #1A008B;
     transition: .4s ease-out;
     outline: none;
   }
@@ -249,7 +250,8 @@ header h1 {
 
     .card:hover {
         background: rgba(255, 255, 255, 1);
-        border: 1px solid rgba(50, 50, 50, 0.9);
+        border: 1px solid #1A008B;
+        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     }
 
     .card:hover .card-text {
@@ -257,7 +259,6 @@ header h1 {
     }
 
     .btn:hover {
-        background: rgba(255, 255, 255, 1);
-        color: rgba(25, 25, 25, 1); 
+        background: rgba(26, 0, 139, 0.6);
     }
 }

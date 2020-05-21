@@ -2,12 +2,14 @@ const usersURL = 'https://randomuser.me/api/?nat=gb&results=12';
 const $gallery = $('#gallery');
 const $body = $('body');
 let userList = [];
-let filterUserList = [];
+let filteredUserList = [];
+let filteredUserCards = [];
 
 
 // ------------------------------------------
 //  FETCH FUNCTIONS
 // ------------------------------------------
+
 
 function fetchData(url) {
     return fetch(url)
@@ -23,6 +25,7 @@ fetchData(usersURL)
 //  HELPER FUNCTIONS
 // ------------------------------------------
 
+
 function checkStatus (response) {
     if (response.ok) {
         return Promise.resolve(response);
@@ -34,13 +37,14 @@ function checkStatus (response) {
 function generateUserInfos(data) {
     let html = "";
     userList = data;
+    let modalList = getListForModal;
 
     data.map( (user, index) => {
         const name = user.name.first + " " + user.name.last;
         html += `
         <div class="card" id="${index}">
             <div class="card-img-container">
-                <img class="card-img" src="${user.picture.medium}" alt="profile picture">
+                <img class="card-img" src="${user.picture.large}" alt="profile picture">
             </div>
             <div class="card-info-container">
                 <h3 id="name" class="card-name cap">${name}</h3>
@@ -50,32 +54,39 @@ function generateUserInfos(data) {
         </div>
         `
     });
+
     $gallery.append(html);
 
     $(".card").on('click', function () {
         const id = $(this).attr('id');
-        const user = userList[id];
-        showInfoForUser(user, id);
+        let user = userList[id];
+        let index = userList.indexOf(userList[id]);
+
+        if(filteredUserList.length > 0) {
+            index = filteredUserList.indexOf(user);
+        }
+
+        showInfoForUser(user, index);
     });
 
     appendSearchBar();
 }
 
-function showInfoForUser(user, id) {
+function showInfoForUser(user, index) {
     const date = new Date(user.dob.date);
     const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
     const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(date);
     const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date);
     const birthday = `${da}/${mo}/${ye}`;
-
     const name = user.name.first + " " + user.name.last;
+    const modalList = getListForModal();
 
     let html = `
         <div class="modal-container">
                 <div class="modal">
                     <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
                     <div class="modal-info-container">
-                        <img class="modal-img" src="${user.picture.medium}" alt="profile picture">
+                        <img class="modal-img" src="${user.picture.large}" alt="profile picture">
                         <h3 id="name" class="modal-name cap">${name}</h3>
                         <p class="modal-text">${user.email}</p>
                         <p class="modal-text cap">${user.location.city}</p>
@@ -86,7 +97,6 @@ function showInfoForUser(user, id) {
                     </div>
                 </div>
 
-                // IMPORTANT: Below is only for exceeds tasks 
                 <div class="modal-btn-container">
                     <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
                     <button type="button" id="modal-next" class="modal-next btn">Next</button>
@@ -94,34 +104,26 @@ function showInfoForUser(user, id) {
             </div>
     `;
 
-
-
     $body.append(html);
 
+    const $modalBtnContainer = $('.modal-btn-container');
     const $modalPrev = $('#modal-prev');
     const $modalNext = $('#modal-next');
 
-    $modalPrev.show();
-    $modalNext.show();
-
-    if(id == 0) {
-        $modalPrev.hide();
-    } else if(id == (userList.length -1)) {
-        $modalNext.hide();
-    }
+    setModalNavigation(index, modalList, $modalBtnContainer, $modalPrev, $modalNext);
 
     $modalNext.on('click', () => {
         $('.modal-container').remove();
-        const nextId = parseInt(id) + 1;
-        const nextUser = userList[nextId];
-        showInfoForUser(nextUser, nextId);
+        const nextIndex = index + 1;
+        let nextUser = modalList[nextIndex];
+        showInfoForUser(nextUser, nextIndex);
     });
 
     $modalPrev.on('click', () => {
         $('.modal-container').remove();
-        const nextId = parseInt(id) - 1;
-        const nextUser = userList[nextId];
-        showInfoForUser(nextUser, nextId);
+        let prevIndex = index - 1;
+        let prevUser = modalList[prevIndex];
+        showInfoForUser(prevUser, prevIndex);
     });
 
 
@@ -136,6 +138,31 @@ function showInfoForUser(user, id) {
     });
 }
 
+const getListForModal = () => {
+    if(filteredUserList.length > 0) {
+        return filteredUserList;
+    } else {
+        return userList;
+    }
+};
+
+const setModalNavigation = (index, list, element, prevBtn, nextBtn) => {
+    element.show();
+    prevBtn.show();
+    nextBtn.show();
+
+    if(index === 0) {
+        prevBtn.hide();
+    }
+    if(index === (list.length -1)) {
+        nextBtn.hide();
+    }
+    if(list.length === 1) {
+        element.hide();
+    }
+};
+
+
 //SearchInput
 const appendSearchBar = () => {
     const allUsers = $('.card');
@@ -143,7 +170,6 @@ const appendSearchBar = () => {
     const html = `
     <form action="#" method="get">
         <input type="search" id="search-input" class="search-input" placeholder="Search...">
-        <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
     </form>
     `;
 
@@ -155,17 +181,24 @@ const appendSearchBar = () => {
 
     input.addEventListener('keyup', (e) => {
         divNoResult.style.display = "none";
-        let name = e.target.value;
-        filterUserList = [];
+        let name = e.target.value.toLowerCase();
+        filteredUserCards = [];
+        filteredUserList = [];
         for (let i = 0; i < allUsers.length; i++) {
-            let userName = allUsers[i].querySelector('h3').textContent;
+            let userName = allUsers[i].querySelector('h3').textContent.toLowerCase();
             allUsers[i].style.display = "none";
             if (userName.includes(name)) {
                 allUsers[i].style.display = "flex";
-                filterUserList.push(allUsers[i]);
+                filteredUserCards.push(allUsers[i]);
+                filteredUserList.push(userList[i]);
             }
         }
-        showNoResult(filterUserList, divNoResult);
+        showNoResult(filteredUserCards, divNoResult);
+    });
+
+    input.addEventListener('search', (e) => {
+        divNoResult.style.display = "none";
+        $('.card').css("display", "flex");
     });
 };
 
@@ -176,11 +209,11 @@ const appendSearchBar = () => {
 
  Creates a div with the message no Results and set the div to display none
  ***/
-const createNoResultDiv = () => {
+const createNoResultDiv = (name) => {
     const divNoResult = document.createElement('div');
     divNoResult.className = "no-result";
     divNoResult.style.display = "none";
-    divNoResult.textContent = "No result found!";
+    divNoResult.textContent = "No User found with your Search-Input";
 
     const $searchContainer = $('#gallery');
     $searchContainer.append(divNoResult);
